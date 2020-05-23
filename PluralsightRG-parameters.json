@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+        "virtualMachines_DC1_name": {
+            "value": null
+        },
+        "Win10_Name": {
+            "value": null
+        },
+        "SQL_Name": {
+            "value": null
+        },
+        "virtualMachines_sp_app_name": {
+            "value": null
+        },
+        "virtualMachines_sp_wfe_name": {
+            "value": null
+        },
+        "networkInterfaces_dc177_name": {
+            "value": null
+        },
+        "networkInterfaces_sql178_name": {
+            "value": null
+        },
+        "networkInterfaces_w10976_name": {
+            "value": null
+        },
+        "publicIPAddresses_DC1_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_W10_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_sql1_ip_name": {
+            "value": null
+        },
+        "networkInterfaces_sp_wfe92_name": {
+            "value": null
+        },
+        "networkInterfaces_sp_app309_name": {
+            "value": null
+        },
+        "publicIPAddresses_sp_app_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_sp_wfe_ip_name": {
+            "value": null
+        },
+        "networkSecurityGroup": {
+            "value": null
+        },
+        "virtualNetworks_Pluralsight_vnet_name": {
+            "value": null
+        },
+        "automationAccounts_emersnbe_DSC_name": {
+            "value": null
+        },
+        "storageAccounts_pluralsightdiag946_name": {
+            "value": null
+        },
+        "schedules_shutdown_computevm_dc1_name": {
+            "value": null
+        },
+        "schedules_shutdown_computevm_w10_name": {
+            "value": null
+        },
+        "schedules_shutdown_computevm_sp_app_name": {
+            "value": null
+        },
+        "schedules_shutdown_computevm_sp_wfe_name": {
+            "value": null
+        }
+    }
+}

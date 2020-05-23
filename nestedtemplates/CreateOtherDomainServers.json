@@ -1,0 +1,204 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "vmName": {
+            "type": "string"
+        },
+        "vmIPAddress": {
+            "type": "string"
+        },
+        "vmImagePublisher": {
+            "type": "string"
+        },
+        "vmImageOffer": {
+            "type": "string"
+        },
+        "vmImageSku": {
+            "type": "string"
+        },
+
+        "diskType": {
+            "type": "string"
+        },
+
+        "domainName": {
+            "defaultValue": "contoso.com",
+            "type": "string"
+        },
+
+        "VNETName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+
+        "networkSecurityGroup": {
+            "type": "String"
+        },
+        
+
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+
+        "adminusername": {
+            "type": "string"
+
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "vmSize": {
+            "type": "string"
+        }
+    },
+    "variables": {
+
+
+
+        "vmNicName": "[concat(parameters('vmName'),'-Nic')]",
+        "vmPublicIPName": "[concat(parameters('vmName'),'-IP')]",
+        "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
+        "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]"
+
+    },
+
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('vmPublicIPName')]",
+            "location": "[resourceGroup().location]",
+
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+
+
+            }
+        },
+
+        {
+            "name": "[variables('vmNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('vmIPAddress')]",
+                            "subnet": {
+                                "id": "[variables('adSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+                }
+            }
+
+        },
+        {
+
+            "name": "[parameters('vmName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('vmNicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminusername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('vmImagePublisher')]",
+                        "offer": "[parameters('vmImageOffer')]",
+                        "sku": "[parameters('vmImageSku')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[variables('vmOSDisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('diskType')]"
+                        }
+                    }
+
+                },
+
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vmNicName'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+
+                    }
+                }
+            },
+            "resources": [
+
+
+                {
+
+                    "apiVersion": "2019-07-01",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmName'),'/joindomain')]",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "JsonADDomainExtension",
+                        "typeHandlerVersion": "1.3",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "Name": "[parameters('domainName')]",
+                            "User": "[concat(parameters('domainName'), '\\', parameters('adminusername'))]",
+                            "Restart": "true",
+                            "Options": 3
+                        },
+                        "protectedSettings": {
+                            "Password": "[parameters('adminPassword')]"
+                        }
+                    }
+                }
+
+
+            ]
+
+        }
+    ]
+}

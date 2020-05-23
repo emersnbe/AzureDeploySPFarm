@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+         
+        },
+        "adSubnetName": {
+            "type": "string"
+        },
+        "adSubnet": {
+            "type": "string"
+        },
+        "networkSecurityGroup": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('location')]",
+            
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/24"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": [
+                        "10.0.0.4"
+                    ]
+                },
+
+
+                "subnets": [
+                    {
+                        "name": "[parameters('adSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('adSubnet')]",
+                            "serviceEndpoints": [
+                            ],
+                            "delegations": [
+                            ],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('networkSecurityGroup'))]"
+                            }
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [
+                ],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+
+            }
+        }
+    ],
+    "outputs": {}
+}

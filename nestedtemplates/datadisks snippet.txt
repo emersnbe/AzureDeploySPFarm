@@ -1,0 +1,12 @@
+"dataDisks": [
+                        {
+                            "name": "[variables('vmDataDisk')]",
+                            "caching": "None",
+                            "lun": 0,
+                            "diskSizeGB": "[variables('vmDataDiskSize')]",
+                            "createOption": "Empty",
+                            "managedDisk": {
+                                "storageAccountType": "[parameters('diskType')]"
+                            }
+                        }
+                    ]

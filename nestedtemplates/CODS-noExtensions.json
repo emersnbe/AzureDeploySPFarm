@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "vmName": {
+            "type": "string"
+        },
+        "vmIPAddress": {
+            "type": "string"
+        },
+        "vmImagePublisher": {
+            "type": "string"
+        },
+        "vmImageOffer": {
+            "type": "string"
+        },
+        "vmImageSku": {
+            "type": "string"
+        },
+
+        "diskType": {
+            "type": "string"
+        },
+
+        "domainName": {
+            "defaultValue": "contoso.com",
+            "type": "string"
+        },
+
+        "VNETName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+
+        "networkSecurityGroup": {
+            "type": "String"
+        },
+
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+
+        "adminusername": {
+            "type": "string"
+
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "vmSize": {
+            "type": "string"
+        },
+        "automationAccountName": {
+            "type": "string"
+        },
+        "nodeConfigurationName": {
+            "type": "string"
+        },
+        "automationAccountRegKey": {
+            "type": "string"
+        }
+    },
+    "variables": {
+
+
+
+        "vmNicName": "[concat(parameters('vmName'),'-Nic')]",
+        "vmPublicIPName": "[concat(parameters('vmName'),'-IP')]",
+        "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
+        "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]"
+
+    },
+
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('vmPublicIPName')]",
+            "location": "[resourceGroup().location]",
+
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+
+
+            }
+        },
+
+        {
+            "name": "[variables('vmNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('vmIPAddress')]",
+                            "subnet": {
+                                "id": "[variables('adSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+                }
+            }
+
+        },
+        {
+            "name": "[parameters('vmName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('vmNicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminusername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('vmImagePublisher')]",
+                        "offer": "[parameters('vmImageOffer')]",
+                        "sku": "[parameters('vmImageSku')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[variables('vmOSDisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('diskType')]"
+                        }
+                    }
+
+                },
+
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vmNicName'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+
+                    }
+                }
+            }
+            
+
+        },
+        {
+
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('VMName'),'/OnboardToDSC')]",
+                    "apiVersion": "2020-06-01",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.77",
+                        "autoUpgradeMinorVersion": true,
+                        "protectedSettings": {
+                            "Items": {
+                                "registrationKeyPrivate": "[parameters('automationAccountRegKey')]"
+                            }
+                        },
+                        "settings": {
+                            "Properties": [
+                                {
+                                    "Name": "RegistrationKey",
+                                    "Value": {
+                                        "UserName": "PLACEHOLDER_DONOTUSE",
+                                        "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                                    },
+                                    "TypeName": "System.Management.Automation.PSCredential"
+                                },
+                                {
+                                    "Name": "RegistrationUrl",
+                                    "Value": "https://ne-agentservice-prod-1.azure-automation.net/accounts/b94fd2b2-c1e6-43ee-8da5-7f4aca1876e7",
+                                    "TypeName": "System.String"
+                                },
+                                {
+                                    "Name": "NodeConfigurationName",
+                                    "Value": "[parameters('nodeConfigurationName')]",
+                                    "TypeName": "System.String"
+                                }
+                            ]
+                        }
+                    }
+                }
+    ]
+}

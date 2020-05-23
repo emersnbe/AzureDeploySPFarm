@@ -1,0 +1,29 @@
+{
+        "apiVersion": "2019-07-01",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('SQL_Name'),'/joindomain')]",
+        "location": "northeurope",
+        "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', parameters('SQL_Name'))]"
+        ],
+        "properties": {
+          "publisher": "Microsoft.Compute",
+          "type": "JsonADDomainExtension",
+          "typeHandlerVersion": "1.3",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "Name": "[parameters('domainToJoin')]",
+            "OUPath": "[parameters('ouPath')]",
+            "User": "[concat(parameters('domainToJoin'), '\\', parameters('domainUsername'))]",
+            "Restart": "true",
+            "Options": "[parameters('domainJoinOptions')]"
+          },
+          "protectedSettings": {
+            "Password": "[parameters('domainPassword')]"
+          }
+        }  
+    },
+
+
+
+    "[resourceId('Microsoft.Resources/Deployments','CreateForest')]"

@@ -1,0 +1,185 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "VMName": {
+
+            "type": "String"
+        },
+        "VMIPAddress": {
+            "type": "string"
+        },
+        "VMSize": {
+            "type": "string"
+        },
+        "VMsku": {
+            "type": "string"
+        },
+        "diskType": {
+            "type": "string"
+        },
+        "VMRole": {
+            "type": "string"
+        },
+        "domainName": {
+            "type": "string"
+        },
+
+        "VNETName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+
+        "networkSecurityGroup": {
+            "type": "String"
+        },
+
+
+        "schedules_shutdown_computevm_dc1_name": {
+            "defaultValue": "shutdown-computevm-dc1",
+            "type": "String"
+        },
+
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+        "artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources such as templates and DSC modules that the script depends on. No need to change unless you copy or fork this template."
+            },
+            "defaultValue": "https://raw.githubusercontent.com/emersnbe/AzureDeploySPFarm/master/"
+        },
+        "adminusername": {
+            "type": "string"
+
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "domainAdmin": {
+            "type": "string",
+            "defaultValue": "adadmin"
+        }
+        
+        
+    },
+    "variables": {
+        "scriptName": "Configure-DSC.ps1",
+        "scriptDownLoad": "[uri(parameters('artifactsLocation'), variables('scriptName'))]",
+        "vmPublicIPName": "[concat(parameters('VMName'),'-IP')]",
+        "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ./',variables('scriptName'),' -SkipNetworkProfileCheck $true')]",
+        "vmNicName": "[concat(parameters('vmName'),'Nic')]",
+        "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
+        "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]"
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-04-01",
+            "name": "[variables('vmPublicIPName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                
+                "ipTags": [
+                ]
+            }
+        },
+        {
+            "name": "[variables('vmNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[parameters('vmIPAddress')]",
+                            "subnet": {
+                                "id": "[variables('adSubnetRef')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+                }
+            }
+        },
+
+        {
+
+            "name": "[parameters('VMName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('vmNicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('VMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('adminusername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('VMsku')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[variables('vmOSDisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('diskType')]"
+                        }
+                    }
+
+                },
+
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vmNicName'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+
+                    }
+                }
+            }
+            
+        }
+
+        
+    ]    
+
+}
