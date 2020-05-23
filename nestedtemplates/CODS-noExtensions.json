@@ -54,9 +54,7 @@
         "vmSize": {
             "type": "string"
         },
-        "automationAccountName": {
-            "type": "string"
-        },
+        
         "nodeConfigurationName": {
             "type": "string"
         },
