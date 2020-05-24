@@ -113,7 +113,9 @@
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmPublicIPName'))]"
                             }
+                            
                         }
+                        
                     }
                 ],
                 "networkSecurityGroup": {
@@ -205,7 +207,7 @@
                                 },
                                 {
                                     "Name": "RegistrationUrl",
-                                    "Value": "https://ne-agentservice-prod-1.azure-automation.net/accounts/b94fd2b2-c1e6-43ee-8da5-7f4aca1876e7",
+                                    "Value": "https://ne-agentservice-prod-1.azure-automation.net/accounts/31831ca9-b1bb-43b5-a16b-2493d9cce1a8",
                                     "TypeName": "System.String"
                                 },
                                 {
