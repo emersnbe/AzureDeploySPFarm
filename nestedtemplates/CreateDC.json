@@ -67,6 +67,9 @@
         },
         "automationAccountRegKey": {
             "type": "string"
+        },
+        "nodeConfigurationNameDC": {
+            "type": "string"
         }
         
         
@@ -217,7 +220,7 @@
                                 },
                                 {
                                     "Name": "NodeConfigurationName",
-                                    "Value": "[parameters('nodeConfigurationName')]",
+                                    "Value": "[parameters('nodeConfigurationNameDC')]",
                                     "TypeName": "System.String"
                                 }
                             ]
