@@ -225,14 +225,14 @@
                         },
                         {
                             "Name": "RebootNodeifNeeded",
-                            "Value": "true",
-                            "TypeName": "boolean"
+                            "Value": true,
+                            "TypeName": "System.boolean"
 
                         },
                         {
                             "Name": "ActionAfterReboot",
                             "Value": "ContinueConfiguration",
-                            "TypeName": "string"
+                            "TypeName": "System.String"
 
                         }
                     ]
