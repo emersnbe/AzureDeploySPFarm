@@ -64,6 +64,9 @@
         "domainAdmin": {
             "type": "string",
             "defaultValue": "adadmin"
+        },
+        "automationAccountRegKey": {
+            "type": "string"
         }
         
         
@@ -177,7 +180,50 @@
                 }
             }
             
-        }
+        },
+        {
+
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('VMName'),'/OnboardToDSC')]",
+                    "apiVersion": "2020-06-01",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.77",
+                        "autoUpgradeMinorVersion": true,
+                        "protectedSettings": {
+                            "Items": {
+                                "registrationKeyPrivate": "[parameters('automationAccountRegKey')]"
+                            }
+                        },
+                        "settings": {
+                            "Properties": [
+                                {
+                                    "Name": "RegistrationKey",
+                                    "Value": {
+                                        "UserName": "PLACEHOLDER_DONOTUSE",
+                                        "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                                    },
+                                    "TypeName": "System.Management.Automation.PSCredential"
+                                },
+                                {
+                                    "Name": "RegistrationUrl",
+                                    "Value": "https://ne-agentservice-prod-1.azure-automation.net/accounts/31831ca9-b1bb-43b5-a16b-2493d9cce1a8",
+                                    "TypeName": "System.String"
+                                },
+                                {
+                                    "Name": "NodeConfigurationName",
+                                    "Value": "[parameters('nodeConfigurationName')]",
+                                    "TypeName": "System.String"
+                                }
+                            ]
+                        }
+                    }
+                }
 
         
     ]    

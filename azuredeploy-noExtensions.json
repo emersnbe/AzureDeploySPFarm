@@ -129,6 +129,10 @@
         },
         "automationAccountRegKey": {
             "type": "string"
+        },
+        "nodeConfigurationNameDC": {
+            "type": "string",
+            "defaultValue": "PluralsightDomain.localhost"
         }
 
     },
@@ -282,6 +286,12 @@
                     "networkSecurityGroup": {
                         "value": "[parameters('networkSecurityGroup')]"
                     },
+                    "automationAccountRegKey": {
+                        "value": "[parameters('automationAccountRegKey')]"
+                    },
+                    "nodeConfigurationName":{
+                        "value": "[parameters('nodeConfigurationNameDC')]"
+                    },
 
 
                     "adminusername": {
@@ -295,40 +305,7 @@
         },
         
 
-        {
-
-            "name": "UpdateVNet",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(parameters('artifactsLocation'), 'nestedtemplates/vnetwithDNS.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-
-                "parameters": {
-                    "vnetName": {
-                        "value": "[parameters('vnetName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-
-                    },
-                    "adSubnetName": {
-                        "value": "[parameters('adSubnetName')]"
-                    },
-                    "adSubnet": {
-                        "value": "[parameters('adSubnet')]"
-                    },
-                    "networkSecurityGroup": {
-                        "value": "[parameters('networkSecurityGroup')]"
-                    }
-
-                }
-            }
-        },
+        
         {
             "name": "[concat('Create',parameters('SQLandSPServers')[copyIndex()].vmName)]",
             "type": "Microsoft.Resources/deployments",
