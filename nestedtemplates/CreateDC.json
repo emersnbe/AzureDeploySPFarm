@@ -224,7 +224,7 @@
                             "TypeName": "System.String"
                         },
                         {
-                            "Name": "RebootifNeeded",
+                            "Name": "RebootNodeifNeeded",
                             "Value": "true",
                             "TypeName": "boolean"
 
