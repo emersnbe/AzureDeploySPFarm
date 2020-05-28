@@ -311,7 +311,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "Microsoft.Resources/Deployments/CreateDC"
+                "[resourceId('Microsoft.Network/virtualNetworks',parameters('vnetName'))]"
                 
 
             ],
