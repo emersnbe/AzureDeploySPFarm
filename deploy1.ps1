@@ -74,8 +74,7 @@ while ($DeployedOK -eq $false) {
         
 }
 Write-Host "Getting Public IP Address to manually add DNSLabels"
-$IPsAssigned=$false
-while($IPsAssigned=$false) {
+
 $PublicIPAddresses = Get-AzPublicIpAddress -ResourceGroupName $newrgname
 foreach ($pip in $PublicIPAddresses) {
         
@@ -85,7 +84,7 @@ foreach ($pip in $PublicIPAddresses) {
     Set-AzPublicIpAddress -PublicIpAddress $pip | Out-Null
     Write-Host "Created DomainNameLabel $DNSLabel"      
 } 
-}
+
 Write-Host 
 Write-Host "------------------------------------------------------------------------------------------------------"
 Write-Host "Sucessfully launched deployment to Resouce Group $newrgname in $location."
