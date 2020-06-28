@@ -1,0 +1,1 @@
+Get-AzAutomationAccount|Get-AzAutomationDscNode|Unregister-AzAutomationDscNode -force

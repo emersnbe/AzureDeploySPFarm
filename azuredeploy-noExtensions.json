@@ -96,6 +96,14 @@
                     "vmImagePublisher": "MicrosoftWindowsServer",
                     "vmImageOffer": "WindowsServer",
                     "vmImageSku": "2016-Datacenter"
+                },
+                {
+                    "vmName": "SPSEARCH",
+                    "vmSize": "Standard_B4ms",
+                    "vmIPAddress": "10.0.0.8",
+                    "vmImagePublisher": "MicrosoftWindowsServer",
+                    "vmImageOffer": "WindowsServer",
+                    "vmImageSku": "2016-Datacenter"
                 }
             ]
 
@@ -125,14 +133,18 @@
         },
         "nodeConfigurationName": {
             "type": "string",
-            "defaultValue": "PluralsightVM.localhost"
+            "defaultValue": "PluralsightConfigOthers.localhost"
         },
         "automationAccountRegKey": {
             "type": "string"
         },
         "nodeConfigurationNameDC": {
             "type": "string",
-            "defaultValue": "PluralsightDomain.localhost"
+            "defaultValue": "PluralsightConfigDC.localhost"
+        },
+        "disksStorageAccount": {
+            "type": "string",
+            "defaultValue": "pluralsightdisks"
         }
 
     },
@@ -142,6 +154,18 @@
 
     },
     "resources": [
+        {
+            "name": "[toLower(parameters('disksStorageAccount'))]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[parameters('location')]",
+            "properties": {},
+            "kind": "Storage",
+            "sku": {
+                "name": "Standard_LRS"
+            }
+        },
+        
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-04-01",

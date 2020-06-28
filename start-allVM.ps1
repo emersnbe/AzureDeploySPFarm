@@ -1,0 +1,1 @@
+get-azvm|start-azvm -nowait

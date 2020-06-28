@@ -161,8 +161,8 @@
                         "name": "[variables('vmOSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[parameters('diskType')]"
+                        "vhd": {
+                            "uri": "https://pluralsightdisks.blob.core.windows.net/vhds/pluralsightdcosdisk.vhd"
                         }
                     }
 
