@@ -142,20 +142,17 @@
             "type": "string",
             "defaultValue": "PluralsightConfigDC.localhost"
         },
-        "disksStorageAccount": {
-            "type": "string",
-            "defaultValue": "pluralsightdisks"
-        },
+    
         "storageNamePrefix": {
             "type": "string",
-            "defaultValue": "pluralsightdisks"
+            "defaultValue": "psdisks"
         }
 
     },
     "functions": [
     ],
     "variables": {
-        "storageAccountName": "[toLower(concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ))]"
+        "storageAccountName": "[toLower(concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id)))]"
 
     },
     "resources": [
@@ -396,6 +393,9 @@
                     },
                     "nodeConfigurationName":{
                         "value": "[parameters('nodeConfigurationName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
                     },
 
 

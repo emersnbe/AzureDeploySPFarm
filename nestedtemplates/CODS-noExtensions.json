@@ -60,6 +60,9 @@
         },
         "automationAccountRegKey": {
             "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -69,7 +72,8 @@
         "vmNicName": "[concat(parameters('vmName'),'-Nic')]",
         "vmPublicIPName": "[concat(parameters('vmName'),'-IP')]",
         "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
-        "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]"
+        "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]",
+        "osDiskUriPrefix": "[concat('https://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', 'pluralsight')]"
 
     },
 
@@ -152,8 +156,8 @@
                         "name": "[variables('vmOSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[parameters('diskType')]"
+                        "vhd": {
+                            "uri": "[concat(variables('osDiskUriPrefix'),parameters('vmName'),'osdisk.vhd')]"
                         }
                     }
 
