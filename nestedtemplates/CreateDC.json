@@ -84,7 +84,7 @@
         "vmPublicIPName": "[concat(parameters('VMName'),'-IP')]",
         "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ./',variables('scriptName'),' -SkipNetworkProfileCheck $true')]",
         "vmNicName": "[concat(parameters('vmName'),'Nic')]",
-        "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
+        "vmOSDisk": "[concat(parameters('vmName'),'-OSDisk')]",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]",
         "osDiskUri": "[concat('https://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', 'pluralsightdcosdisk.vhd')]"
 

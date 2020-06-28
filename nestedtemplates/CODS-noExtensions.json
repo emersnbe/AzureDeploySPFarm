@@ -71,7 +71,7 @@
 
         "vmNicName": "[concat(parameters('vmName'),'-Nic')]",
         "vmPublicIPName": "[concat(parameters('vmName'),'-IP')]",
-        "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
+        "vmOSDisk": "[concat(parameters('vmName'),'-OSDisk')]",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]",
         "osDiskUriPrefix": "[concat('https://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', 'pluralsight')]"
 
