@@ -145,17 +145,22 @@
         "disksStorageAccount": {
             "type": "string",
             "defaultValue": "pluralsightdisks"
+        },
+        "storageNamePrefix": {
+            "type": "string",
+            "defaultValue": "pluralsightdisks"
         }
 
     },
     "functions": [
     ],
     "variables": {
+        "storageAccountName": "[toLower(concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ))]"
 
     },
     "resources": [
         {
-            "name": "[toLower(parameters('disksStorageAccount'))]",
+            "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('location')]",
@@ -315,6 +320,9 @@
                     },
                     "nodeConfigurationNameDC":{
                         "value": "[parameters('nodeConfigurationNameDC')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
                     },
 
 

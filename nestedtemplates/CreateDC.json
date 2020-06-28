@@ -36,6 +36,10 @@
         "networkSecurityGroup": {
             "type": "String"
         },
+        "storageAccountName": {
+            "type": "string"
+
+        },
 
 
         "schedules_shutdown_computevm_dc1_name": {
@@ -82,6 +86,7 @@
         "vmNicName": "[concat(parameters('vmName'),'Nic')]",
         "vmOSDisk": "[concat(parameters('vmName'),'-managed-OSDisk')]",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('SubnetName'))]"
+        "osDiskUri": "[concat('https://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', 'pluralsightdcosdisk.vhd')]"
 
     },
     "resources": [
@@ -162,7 +167,7 @@
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "vhd": {
-                            "uri": "https://pluralsightdisks.blob.core.windows.net/vhds/pluralsightdcosdisk.vhd"
+                            "uri": "[variables('osDiskUri')]"
                         }
                     }
 
